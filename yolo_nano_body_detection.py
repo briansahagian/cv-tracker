@@ -24,7 +24,7 @@ def main():
             break
 
         results = model(frame, classes=0, stream=True)
-        # classes=0 only looks for persons, stream=True is efficient for memoru
+        # classes=0 only looks for persons, stream=True is efficient for memory
         
         for r in results: #r is object representing frame, containing a information on each
             boxes = r.boxes
@@ -35,7 +35,7 @@ def main():
 
                 conf = round(float(box.conf[0]), 2) #round confidence to 2 dec
 
-                cv2.rectangle(frame, (x1, y2), (x2, y2), (0, 255, 0), 2)
+                cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
                 cv2.putText(frame, f"Person {conf}", (x1, y1-10), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
                 body_center_x = int(x1 + (x2-x1)/2)
                 body_center_y = int(y1 + (y2-y1)/2)
