@@ -31,13 +31,19 @@ class PIDController:
         # update state
         self.previous_time = current_time
 
-        error = setpoint - current_value
+        raw_error = setpoint - current_value
 
-        if abs(error) < self.deadband:
+        derivative = (raw_error - self.previous_error) / dt
+
+        D = self.kd * derivative
+
+        if abs(raw_error) < self.deadband:
             error = 0
             # If spending lots of time in deadband, bleed integral
             # to avoid jumps after leaving deadband
-            self.integral *= 0.9
+            self.integral *= 0.8
+        else:
+            error = raw_error
 
         P = self.kp * error
 
@@ -51,9 +57,6 @@ class PIDController:
 
         I = self.ki * self.integral
 
-        derivative = (error - self.self.previous_error) / dt
-
-        D = self.kd * derivative
 
         self.previous_error = error
 

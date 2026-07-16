@@ -12,7 +12,7 @@ from ultralytics import YOLO
 from controller import PIDController
 from servo_command import send_to_arduino
 
-def clamp_angle(angle, min_angle = 0, max_angle = 180):
+def clamp_angle(angle, min_angle = 0, max_angle = 270):
     # Ensures we never go out of angle range for servo
     return max(min_angle, min(angle, max_angle))
 
@@ -31,13 +31,18 @@ def main():
     center_y = frame_height // 2
     print("Camera opened successfully.")
 
-    pan_pid = PIDController(kp=0.95, ki=0.01, kd=0.02, deadband=30, integral_limit=50)
-    tilt_pid = PIDController(kp=0.05, ki=0.01, kd=0.02, deadband=30, integral_limit=50)
+    pan_pid = PIDController(kp=0.01, ki=0.0, kd=0.0, deadband=25, integral_limit=50)
+    tilt_pid = PIDController(kp=0.008, ki=0.0, kd=0.0, deadband=10, integral_limit=50)
 
     current_pan_angle = 90.0
-    current_tilt_angle = 90.0
+    current_tilt_angle = 55.0
 
     print("System armed, 'q' to quit.")
+
+     # --- FULLSCREEN SETUP ---
+    # cv2.namedWindow('Gimbal Tracker', cv2.WINDOW_NORMAL)
+    # cv2.setWindowProperty('Gimbal Tracker', cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
+    
 
     while True: # loop indefinitely
         # cap is a VideoCapture object
@@ -67,7 +72,7 @@ def main():
                 body_center_y = int(y1 + (y2-y1)/2)
 
                 pan_effort = pan_pid.calculate(setpoint=center_x, current_value=body_center_x)
-                tilt_effort = tilt_pid_pid.calculate(setpoint=center_y, current_value=body_center_y)
+                tilt_effort = tilt_pid.calculate(setpoint=center_y, current_value=body_center_y)
 
                 # may need to subtract effort depending on servo direction
                 current_pan_angle += pan_effort
